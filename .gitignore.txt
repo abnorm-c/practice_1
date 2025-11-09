@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.DS_Store
+*.pdf
+*.log
+*.exe
+*.out
+.env
+_skbuild/
+*.egg-info/

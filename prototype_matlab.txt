@@ -1,0 +1,53 @@
+clear; clc; close all;
+% reservoir parameters
+h = 20; % (m) vertical thickness
+phi = 0.15; % (1) porosity
+k = 1e-15; % (m^2) permeability
+mu = 1e-3; % (Pa * s) dynamic viscosity
+c = 0.5e-9; % (1/Pa) total compressibility 
+p0 = 250e5; % (Pa) initial pressure
+
+% Well parameters
+rw = 0.12; % (m) radius
+
+% Simulation parameters
+dt = 86400; % (s) time step 
+N = 300; (1) number steps
+
+% Inintialization
+kV = 1: N; % {k} sequence | step number 
+tV = kV * dt; % {t_k} sequence | time value
+Q = zeros(size(kV)); % {Q_k} sequence | liquid rate 
+% borehole pressure 
+p = ones (size (kV))*p0; % initial reservoir pressure 
+p(50: 150) = 450e5; % (Pa) injection period
+p(151: end) = 50e5; % (Pa) production period
+
+% Constants
+kappa = k / phi / mu / ct; % (m^2/s) conductivity index 
+B = - (rw^2) / 4 / kappa / dt;
+Ei0 = expint(-B);
+A = 4 * kappa * pi * phi * ct * h / Ei0;
+Ei = expint(-B./kV) - expint (-B ./(kV+1));
+E = Ei / Ei0;
+
+% Solve
+Q (1) = A * (p0 - p(1));
+for n = 2: N
+    ii = 1: (n-1); ii_=(n-1): -1: 1;
+    Q(n) = A * (p0 - p(n)) + dot(E(ii), Q (ii_));
+end
+
+% Plot 
+figure;
+ax(1) = subplot(2, 1, 1); hold on; grid on; box on; 
+plot (tV / 86400, ones(size(p))*p0/1e5, '--b');
+plot (tV / 86400, p/1e5, '-b')
+ylabel('Pressure, bar'); ylim ([0, 500]);
+legend ({'init reservoir pres.', 'borehole pres.'});
+
+ax (2) = subplot(2, 1, 2); hold on; grid on; box on; 
+plot (tV / 86400, Q*86400, '-r');
+ylabel('Liquid rate, m^3/day');
+xlabel ('Time, days'); linkaxes (ax, 'x');
+saveas(gcf, 'exmple1', 'eps');
