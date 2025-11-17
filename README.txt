@@ -15,7 +15,6 @@
 - Web Framework: Mercury (Python)
 - Визуализация: Matplotlib, NumPy
 - Платформа: Jupyter Notebook
-- ОС: Windows (с поддержкой bat-файлов)
 
 ## Запуск приложения
 
